@@ -2,19 +2,22 @@
 <div class="alert alert-danger" role="alert">
 	{% for message in messages %} {{ message }} {% endfor %}
 </div>
-{% endif %} {% endwith %}
+{% endif %} {% endwith %} {% for task in tasks %}
 <br>
 <div class="container">
 	<div class="row justify-content-center">
 		<div class="col-6">
 
-			<form method="post" action="/store" enctype="multipart/form-data">
+			<form method="post" action="/update_task" enctype="multipart/form-data">
 				<div class="card">
 					<div class="card-header text-center">
-						Add Task
+						Edit Task
 					</div>
 					<div class="card-body">
 						<p class="card-text">
+						<div class="form-group">
+							<input type="hidden" value="{{task[0]}}" name="txtID" id="txtID">
+						</div>
 						<div class="form-group">
 							<div class="input-group mb-3">
 								<div class="input-group-prepend">
@@ -22,12 +25,12 @@
 								</div>
 								<input id="txtName" name="txtName" type="text" class="form-control"
 									aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
-									autofocus>
+									value="{{task[1]}}" autofocus>
 							</div>
 						</div>
 						<div class="form-group mt-4">
-							<input type="submit" class="btn btn-success" value="Add">
-							<a href="{{url_for('index')}}" class="btn btn-danger">Exit</a>
+							<input type="submit" class="btn btn-success" value="Confirm">
+							<a href="{{url_for('index_task')}}" class="btn btn-danger">Exit</a>
 						</div>
 						</p>
 					</div>
@@ -36,4 +39,4 @@
 		</div>
 	</div>
 </div>
-{% include 'footer.html' %}
+{% endfor %} {% include 'footer.html' %}

@@ -1,0 +1,61 @@
+{% include 'header.html' %}
+<br>
+<a href="{{url_for('create_task')}}" class="btn btn-success">
+	New Task
+</a>
+<br>
+<br>
+
+<table class="table table-light table-striped">
+	<thead class="thead-light">
+		<tr>
+			<th scope="col"></th>
+			<th scope="col">TaskName</th>
+			<th scope="col"></th>
+		</tr>
+	</thead>
+	<tbody id='container-table'>
+		{% for task in tasks %}
+		<tr>
+			<td>
+				<form method="post" action="/check_task" enctype="multipart/form-data">
+					{% if task[2] == 0 %}
+					<div class="form-group justify-content-center">
+						<input type="hidden" value="{{task[0]}}" name="txtID" id="txtID">
+						<input type="hidden" value="{{task[5]}}" name="txtNameFolder" id="txtNameFolder">
+						<button type="submit" value="{{task[2]}}" name="txtCheck" id="txtCheck" class='btn-checkbox'>
+							<input type="checkbox">
+						</button>
+					</div>
+					{% else %}
+					<div class="form-group justify-content-center">
+						<input type="hidden" value="{{task[0]}}" name="txtID" id="txtID">
+						<input type="hidden" value="{{task[5]}}" name="txtNameFolder" id="txtNameFolder">
+						<button type="submit" value="{{task[2]}}" name="txtCheck" id="txtCheck" class='btn-checkbox'>
+							<input type="checkbox" checked>
+						</button>
+					</div>
+					{% endif %}
+				</form>
+			</td>
+			<td>
+				{{task[1]}}
+			</td>
+			<td>
+				<a class="btn btn-warning" href="/edit_task/{{task[0]}}">Edit</a> |
+				<a class="btn btn-danger" onclick="return confirm(' Are you sure you want to delete the task?')"
+					href="/destroy_task/{{task[0]}}">Delete</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<script>
+	function check(checkbox, form) {
+		console.log(form)
+		checkbox.value == 1 ? checkbox.value = 0 : checkbox.value = 1
+		checkbox.checked ? checkbox.checked = true : checkbox.checked = false
+		form.submit()
+	}
+</script>
+{% include 'footer.html' %}

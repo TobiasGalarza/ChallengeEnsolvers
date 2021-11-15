@@ -7,10 +7,34 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
 		integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
 	<title>Task Manager</title>
+
+	<style>
+		.btn-checkbox {
+			border: none;
+			background: none;
+			padding: 3;
+			width: 5px;
+			height: 5px;
+		}
+	</style>
 </head>
 
 <body>
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
-		<a class="navbar-brand" href="{{url_for('index')}}">Task Manager</a>
+		<a class="navbar-brand">Task Manager</a>
+		<div id="my-nav" class="collapse navbar-collapse">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item active">
+					<a class="nav-link" href="{{url_for('index_task')}}">
+						Tasks
+					</a>
+				</li>
+				<li class="nav-item active">
+					<a class="nav-link" href="{{url_for('index_folder')}}">
+						Folders
+					</a>
+				</li>
+			</ul>
+		</div>
 	</nav>
 	<div class="container">
