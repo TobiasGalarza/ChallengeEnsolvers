@@ -1,7 +1,7 @@
 # Challenge Ensolvers
 Deploy: 
 
-Requirements
+#Requirements
 
 In order to run the app are required:
 
