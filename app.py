@@ -55,11 +55,15 @@ def update_task():
 		return redirect(f'/edit_task/{id}')
 
 	sql = "UPDATE `prueba1`.`tasks` SET `name`=%s WHERE id=%s;"
-	datos =(_name, id)
+	datos = (_name, id)
 	conn=mysql.connect()
 	cursor= conn.cursor()
 	cursor.execute(sql, datos)
 	conn.commit()
+
+	if request.form['txtNameFolder'] != '':
+		folder = request.form['txtNameFolder']
+		return redirect(f'/{folder}/items')
 
 	return redirect('/')
 
@@ -72,7 +76,7 @@ def check_task():
 	id = request.form['txtID']
 
 	sql = "UPDATE `prueba1`.`tasks` SET `check`=%s WHERE id=%s;"
-	datos =(_check, id)
+	datos = (_check, id)
 	conn=mysql.connect()
 	cursor= conn.cursor()
 	cursor.execute(sql, datos)
@@ -91,25 +95,41 @@ def create_task():
 @app.route('/store_task', methods=['POST'])
 def storage_task():
 	_name = request.form['txtName']
-	#_id_folder = request.form['txtIDfolder']
 	
 	#data validation
 	if _name=='':
 		flash('Remember fill the field')
 		return redirect(url_for('create_task'))
 
-	sql = "INSERT INTO `prueba1`.`tasks` (`name`) VALUES (%s);"# formatear id_folder
-	datos =(_name)# agregar id_folder
-	conn = mysql.connect()
-	cursor = conn.cursor()
-	cursor.execute(sql,datos)
-	conn.commit()
 
-	# if request.form['txtNameFolder']:
-	# 	folder = request.form['txtNameFolder']
-	# 	return redirect(f'/{folder}/items')
+	if request.form['txtNameFolder']:
+		folder = request.form['txtNameFolder']
 
-	return redirect('/')
+		sql = "SELECT `folders`.`id` FROM `prueba1`.`folders` WHERE `folders`.`name` LIKE %s;"
+		datos = (folder)
+		conn = mysql.connect()
+		cursor = conn.cursor()
+		cursor.execute(sql, datos)
+		id_folder = cursor.fetchall()
+
+		sql = "INSERT INTO `prueba1`.`tasks` (`name`,`id_folder`) VALUES (%s, %s);"
+		datos = (_name, id_folder)
+		conn = mysql.connect()
+		cursor = conn.cursor()
+		cursor.execute(sql, datos)
+		conn.commit()
+		
+		return redirect(f'/{folder}/items')
+
+	else:
+		sql = "INSERT INTO `prueba1`.`tasks` (`name`) VALUES (%s);"
+		datos = (_name)
+		conn = mysql.connect()
+		cursor = conn.cursor()
+		cursor.execute(sql, datos)
+		conn.commit()
+
+		return redirect('/')
 
 
 ##################FOLDERS#########################
@@ -124,25 +144,11 @@ def index_folder():
 
 	return render_template('folders/index_folder.html', folders= folders)
 
-@app.route('/<string:folder>/items')
-def index_folder_items(folder):
-	sql = '''
-	SELECT * 
-	FROM `prueba1`.`tasks`, `prueba1`.`folders` 
-	WHERE `tasks`.`id_folder`=`folders`.`id`
-	AND `folders`.`name` LIKE %s;
-	'''
-	conn = mysql.connect()
-	cursor = conn.cursor()
-	cursor.execute(sql, (folder))
-	items = cursor.fetchall()
-
-	return render_template('tasks/index_task.html', tasks= items)
-
 @app.route('/destroy_folder/<int:id>')
 def destroy_folder(id):
 	conn=mysql.connect()
 	cursor= conn.cursor()
+	cursor.execute("DELETE FROM `prueba1`.`tasks` WHERE id_folder=%s", (id))
 	cursor.execute("DELETE FROM `prueba1`.`folders` WHERE id=%s", (id))
 	conn.commit()
 
@@ -168,7 +174,7 @@ def update_folder():
 		return redirect(f'/edit_folder/{id}')
 
 	sql = "UPDATE `prueba1`.`folders` SET `name`=%s WHERE id=%s;"
-	datos =(_name, id)
+	datos = (_name, id)
 	conn=mysql.connect()
 	cursor= conn.cursor()
 	cursor.execute(sql, datos)
@@ -190,13 +196,54 @@ def storage_folder():
 		return redirect(url_for('create_folder'))
 
 	sql = "INSERT INTO `prueba1`.`folders` (`name`) VALUES (%s);"
-	datos =(_name)
+	datos = (_name)
 	conn = mysql.connect()
 	cursor = conn.cursor()
-	cursor.execute(sql,datos)
+	cursor.execute(sql, datos)
 	conn.commit()
 
 	return redirect('/folders')
+
+
+##################FOLDER_ITEMS#########################
+
+@app.route('/<string:folder>/items')
+def index_folder_items(folder):
+	sql = '''
+	SELECT `tasks`.* 
+	FROM `prueba1`.`tasks`, `prueba1`.`folders` 
+	WHERE `tasks`.`id_folder`=`folders`.`id`
+	AND `folders`.`name` LIKE %s;
+	'''
+	datos = (folder)
+	conn = mysql.connect()
+	cursor = conn.cursor()
+	cursor.execute(sql, datos)
+	items = cursor.fetchall()
+
+	return render_template('tasks/index_task.html', tasks= items, folder=folder)
+
+@app.route('/destroy/<string:folder>/<int:id>')
+def destroy_folder_items(folder, id):
+	conn=mysql.connect()
+	cursor= conn.cursor()
+	cursor.execute("DELETE FROM `prueba1`.`tasks` WHERE id=%s", (id))
+	conn.commit()
+
+	return redirect(f'/{folder}/items')
+
+@app.route('/edit/<string:folder>/<int:id>')
+def edit_folder_items(folder, id):
+	conn = mysql.connect()
+	cursor = conn.cursor()
+	cursor.execute("SELECT * FROM `prueba1`.`tasks` WHERE id=%s", (id))
+	tasks = cursor.fetchall()
+
+	return render_template('tasks/edit_task.html', tasks=tasks, folder=folder)
+
+@app.route('/create/<string:folder>/item')
+def create_folder_item(folder):
+	return render_template('tasks/create_task.html', folder=folder)
 
 
 if __name__ == '__main__':

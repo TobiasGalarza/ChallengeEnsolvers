@@ -1,8 +1,14 @@
 {% include 'header.html' %}
 <br>
+{% if folder %}
+<a href="/create/{{folder}}/item" class="btn btn-success">
+	New Task
+</a>
+{% else %}
 <a href="{{url_for('create_task')}}" class="btn btn-success">
 	New Task
 </a>
+{% endif %}
 <br>
 <br>
 
@@ -22,7 +28,7 @@
 					{% if task[2] == 0 %}
 					<div class="form-group justify-content-center">
 						<input type="hidden" value="{{task[0]}}" name="txtID" id="txtID">
-						<input type="hidden" value="{{task[5]}}" name="txtNameFolder" id="txtNameFolder">
+						<input type="hidden" value="{{folder}}" name="txtNameFolder" id="txtNameFolder">
 						<button type="submit" value="{{task[2]}}" name="txtCheck" id="txtCheck" class='btn-checkbox'>
 							<input type="checkbox">
 						</button>
@@ -30,7 +36,7 @@
 					{% else %}
 					<div class="form-group justify-content-center">
 						<input type="hidden" value="{{task[0]}}" name="txtID" id="txtID">
-						<input type="hidden" value="{{task[5]}}" name="txtNameFolder" id="txtNameFolder">
+						<input type="hidden" value="{{folder}}" name="txtNameFolder" id="txtNameFolder">
 						<button type="submit" value="{{task[2]}}" name="txtCheck" id="txtCheck" class='btn-checkbox'>
 							<input type="checkbox" checked>
 						</button>
@@ -42,20 +48,18 @@
 				{{task[1]}}
 			</td>
 			<td>
+				{% if folder %}
+				<a class="btn btn-warning" href="/edit/{{folder}}/{{task[0]}}">Edit</a> |
+				<a class="btn btn-danger" onclick="return confirm(' Are you sure you want to delete the task?')"
+					href="/destroy/{{folder}}/{{task[0]}}">Delete</a>
+				{% else %}
 				<a class="btn btn-warning" href="/edit_task/{{task[0]}}">Edit</a> |
 				<a class="btn btn-danger" onclick="return confirm(' Are you sure you want to delete the task?')"
 					href="/destroy_task/{{task[0]}}">Delete</a>
+				{% endif %}
 			</td>
 		</tr>
 		{% endfor %}
 	</tbody>
 </table>
-<script>
-	function check(checkbox, form) {
-		console.log(form)
-		checkbox.value == 1 ? checkbox.value = 0 : checkbox.value = 1
-		checkbox.checked ? checkbox.checked = true : checkbox.checked = false
-		form.submit()
-	}
-</script>
 {% include 'footer.html' %}

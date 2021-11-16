@@ -17,6 +17,11 @@
 						<p class="card-text">
 						<div class="form-group">
 							<input type="hidden" value="{{task[0]}}" name="txtID" id="txtID">
+							{% if folder %}
+							<input type="hidden" value="{{folder}}" name="txtNameFolder" id="txtNameFolder">
+							{% else %}
+							<input type="hidden" value="" name="txtNameFolder" id="txtNameFolder">
+							{% endif %}
 						</div>
 						<div class="form-group">
 							<div class="input-group mb-3">
@@ -30,7 +35,11 @@
 						</div>
 						<div class="form-group mt-4">
 							<input type="submit" class="btn btn-success" value="Confirm">
+							{% if folder %}
+							<a href="/{{folder}}/items" class="btn btn-danger">Exit</a>
+							{% else %}
 							<a href="{{url_for('index_task')}}" class="btn btn-danger">Exit</a>
+							{% endif %}
 						</div>
 						</p>
 					</div>
